@@ -1,0 +1,3 @@
+django
+msqlclient
+django-debug-toolbar
