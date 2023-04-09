@@ -10,9 +10,10 @@ from django.db.models import Q,F
 from django.db import transaction
 from django.db import connection
 
-@transaction.atomic()
+# @transaction.atomic()
 def say_hello(request):
-
+    # query_set = Product.objects.filter(id__gt=1) 
+    # print(query_set[1])
     # extract Data without Model 
     # with connection.cursor() as cursor:
     #     # cursor.execute("INSERT")
@@ -69,7 +70,11 @@ def say_hello(request):
 
     #-- Custom Manager
     # result = TaggedItem.objects.get_tag_for(Product,1)
-   
+    # query_set = Product.objects.filter(id__lt=10)
+    # list(query_set)
+    # query_set[0]
+
+
     #-- Get tag for specific Product
     # content_type = ContentType.objects.get_for_model(Product)
     # result = TaggedItem.objects \
@@ -82,25 +87,32 @@ def say_hello(request):
     #-- Perform Expression on Unit_Price
     # discounted_price = ExpressionWrapper(F('unit_price') * 0.8,output_field=DecimalField())
     # result = Product.objects.annotate(discount_price=discounted_price)
-
+    # discounted_price = ExpressionWrapper(F('unit_price') * 0.12,output_field=DecimalField())
+    # result = Product.objects.annotate(
+    #     discount_price=discounted_price
+    # )
     #-- Get Count of order of every Customer
     # result = Customer.objects.annotate(orders_count=Count("order"))
+
+    #----- Add django Cancat function
+    # result = Customer.objects.annotate(
+    #         full_name = Concat(
+    #         F('first_name'),Value(' '),F('last_name')
+    #     )
+    #     )
 
     #-- Add func class to perform cancatination
     # result = Customer.objects.annotate(full_name=Func(
     #   F("first_name"),Value(" "),F("last_name"),function="CONCAT"  
     # ))
-   
-    # result = Customer.objects.annotate(full_name=Concat(
-    #  cancatenate   
-    #   "first_name",Value(" "),"last_name"
-    # ))
 
-    #-- Add new attributes in Product Table 
+
+    #-- Add new attributes in Product Table with id of product Table
     # result = Product.objects.annotate(new_id=F("id"))
    
     #-- Perform calculation on product Table 
-    # result = Product.objects.filter("collection__id").aggregate(count=Count("id"),min_price=Min("unit_price"))
+    # result = Product.objects.filter(collection__id=1).aggregate(count=Count("id"),min_price=Min("unit_price"))
+    # result = Product.objects.filter(collection__id=1).aggregate(count=Count('id))
     # result = Product.objects.aggregate(count=Count("id"),min_price=Min("unit_price"))
 
     #-- Return last 5 order with customer,orderitem and Product.
@@ -109,21 +121,26 @@ def say_hello(request):
     # query_set = Product.objects.prefetch_related("promotions").select_related("collection").all()
     # query_set = Product.objects.select_related("collection__someOtherFields").all()
     #-- Return Preload Product and Collection Table --select_relation(1)
-    # query_set = Product.objects.select_related("collection").all()
-
-    #-- Return all Product fields rather than Description field
+    # query_set = Product.objects.prefetch_related('orderitem_set').all()
+    # print(query_set)
+    # for product in query_set:
+    #     print(product.orderitem.payment_status)
+    #-- Return all Product fields rather than Description field it's not good approach bcz 
+       # if you use in template it generate lot of queries
     # query_set = Product.objects.defer("description")
     #-- Return Instance of Model class with only title and ID fields
     #-- values is better than only field bcz it execute multiple Queries  
     # query_set = Product.objects.only("title","id")
     
     # query_set = Product.objects.filter(id__in=OrderItem.objects.values("product_id")).order_by("title")
+    # ---- return product that have been ordered
+    # query_Set = orderitem.objects.filter('product_it').distinct()
     #-- return id,title and colllection__id column with bunch of  tuples datatype
     # query_set = Product.objects.values_list("id","title","collection__id")    
-    #-- return id,title and colllection__id column with dict datatype
-    # query_set = Product.objects.values("id","title","collection__id")    
+    #-- return id,title and colllection__id column with dict datatype not an object instance
+    # query_set = Product.objects.values("id","title","collection__id")
 
-    # Products: 5,6,7,8,9
+    #----Slicing Products: 5,6,7,8,9
     # query_set = Product.objects.all()[5:10]
     # Products: 1,2,3,4,5
     # query_set = Product.objects.all()[:5]
@@ -134,7 +151,7 @@ def say_hello(request):
     # product = Product.objects.earliest('title')
     # Return First Object
     # product = Product.objects.filter(collection__id=5)[0]
-    # Filter and sorting by unit Price
+    # Filter and sorting by unit Price and return queryset
     # query_set = Product.objects.filter(collection__id=5).order_by("unit_price")
     # Product in ASC by unitPrice and Descending in title and reverse alter the Work Flow 
     # query_set = Product.objects.order_by("unit_price","-title").reverse() 
@@ -144,9 +161,12 @@ def say_hello(request):
     # query_set = Product.objects.order_by("title") 
 
     # Products: inventory = unit_price
+    # we can compare integer value with string value using F class
     # query_set = Product.objects.filter(inventory=F('collection__id'))
     # query_set = Product.objects.filter(inventory=F('unit_price'))
+    
 
+    # print(query_set)
     # Products: Invenory <10 AND price < 20
     # query_set = Product.objects.filter(inventory__lt=10).filter(unit_price__lt=20)
     # Invenory <10 AND and NOT price < 20
@@ -169,20 +189,46 @@ def say_hello(request):
     # query_set = Product.objects.filter(collection__id=6).order_by("unit_price")
     # query_set = Product.objects.filter(inventory=F('collection_id'))
     # inventry > 20 or unitprice<10
+   
+    # ------  Perform ~Not Operator in SQL 
+    # query_set = Product.objects.filter(Q(inventory__gt=20) | ~Q(unit_price__lt=10))
     # query_set = Product.objects.filter(Q(inventory__gt=20),Q(unit_price__lt=10))
     # query_set = Product.objects.filter(collection__title="Pets")  inner join
-
-    query_set = Product.objects.filter(title__icontains="Pets")
+    # product = Product.objects.filter(Q(inventory__lt=10) | Q(unit_price__lt=20))
+   
+    # ------ Return products that inventory < 10 and unit_price < 20
+    # product = Product.objects.filter(inventory__lt=10).filter(unit_price__lt=20)
+    # products = Product.objects.filter(inventory__lt=10,unit_price__lt=20) 
+ 
+    #---- return products that description field have NUll Value
+    # query_set = Product.objects.filter(description__isnull=True)
+    # query_set = Product.objects.filter(last_update__year=2021) 
+    # query_set = Product.objects.filter(title__icontains="Pets")
+    # query_set = Product.objects.filter(title__contains="Pets")
+    # ----- reurn products that belongs to this collection title
     # query_set = Product.objects.filter(collection__title="Pets")
+    #----- return query_Set than have range btw
     # query_set = Product.objects.filter(unit_price__range=(20,22))
+    #------ return value that greater than 20
     # Products = Product.objects.filter(unit_price__gt=20)
     
-    # return Boolean Value
+    #-------- Return Boolean Value
     # exist = Product.objects.filter(pk=1).exists()
     
-    #return record or None
+    # product = Product.objects.filter(unit_price=20.00)
+    # if len(product) > 0:
+    #     for d in product:
+    #         print(d)
+    # else:
+    #     print("No Record Exist")
+
+    # Return record or None
     # query_set = Product.objects.filter(pk=1).first()
-    #-- Raise error if not Found 
-    # query_set = Product.objects.get(pk=1)
-    # print(query_set)
-    return render(request, 'hello.html',{"result":list(query_set)})
+
+    # Raise error if not Found we handle this by exception Handling 
+    # try:
+    #     query_set = Product.objects.get(pk=0)
+    # except ObjectDoesNotExist:
+    #     print("Record Does not exist")
+
+    return render(request, 'hello.html',{"result":"reult"})
