@@ -39,7 +39,7 @@ def say_hello(request):
     #     orderitem.save()
 
     #-- DELETE Method
-    # collection  =Collection.objects.get(pk=10)
+    # collection  = Collection.objects.get(pk=10)
     # collection.delete()
     # Collection.objects.filter(id__gt=5).delete()
    
@@ -64,9 +64,9 @@ def say_hello(request):
     # collection = Collection(title="videoGames")
 
     # Queryset Cache
-    # query_set = Product.objects.all()
-    # result = list(query_set)
-    # query_set[0]
+   #  query_set = Product.objects.filter(id__lt=8)
+   #  result = list(query_set)
+   #  s = query_set[0]
 
     #-- Custom Manager
     # result = TaggedItem.objects.get_tag_for(Product,1)
@@ -92,7 +92,8 @@ def say_hello(request):
     #     discount_price=discounted_price
     # )
     #-- Get Count of order of every Customer
-    # result = Customer.objects.annotate(orders_count=Count("order"))
+   #  result = Customer.objects.annotate(orders_count=Count("order"))
+   #  print(result)
 
     #----- Add django Cancat function
     # result = Customer.objects.annotate(
@@ -111,7 +112,8 @@ def say_hello(request):
     # result = Product.objects.annotate(new_id=F("id"))
    
     #-- Perform calculation on product Table 
-    # result = Product.objects.filter(collection__id=1).aggregate(count=Count("id"),min_price=Min("unit_price"))
+   #  result = Product.objects.filter(collection__id=3).aggregate(count=Count("id"),min_price=Min("unit_price"))
+   #  print(result)
     # result = Product.objects.filter(collection__id=1).aggregate(count=Count('id))
     # result = Product.objects.aggregate(count=Count("id"),min_price=Min("unit_price"))
 
@@ -175,8 +177,12 @@ def say_hello(request):
     # query_set = Product.objects.filter(Q(inventory__lt=10) | Q(unit_price__lt=20))
     # Invenory <10 AND price < 20
     # query_set = Product.objects.filter(Q(inventory__lt=10),  Q(unit_price__lt=20))
-   
-    # query_set = Product.objects.filter(id__in=OrderItem.objects.values('product_id').distinct()).order_by("title")
+   #  orderData = OrderItem.objects.values('product_id').distinct()
+   #  for order in orderData:
+   #      print(order)    
+   #  query_set = Product.objects.filter(id__in=OrderItem.objects.values('product_id').distinct()).order_by("title")
+   #  for q in query_set:
+   #     print(q.id)
     # query_set = Product.objects.values_list("id","title")  #return Tuples with both fields
     # query_set = Product.objects.values("id","title","collection__title") #return Dictory and only Id and title
     # 5,6,7,8,9
@@ -223,7 +229,9 @@ def say_hello(request):
     #     print("No Record Exist")
 
     # Return record or None
-    # query_set = Product.objects.filter(pk=1).first()
+   #  query_set = Product.objects.filter(pk=1,collection=1)
+   #  for query in query_set:
+   #      print(query.id)
 
     # Raise error if not Found we handle this by exception Handling 
     # try:
@@ -231,4 +239,4 @@ def say_hello(request):
     # except ObjectDoesNotExist:
     #     print("Record Does not exist")
 
-    return render(request, 'hello.html',{"result":"reult"})
+    return render(request, 'hello.html')
