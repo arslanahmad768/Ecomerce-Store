@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'tags',
     'likes',
     'store_custom',
+    'rest_framework',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -83,7 +85,12 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'storefront.wsgi.application'
+# Convert default string into deciamal price
 
+REST_FRAMEWORK = {
+    'COERCE_DECIMAL_TO_STRING': False,
+    # 'PAGE_SIZE': 10
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
