@@ -44,9 +44,9 @@ INSTALLED_APPS = [
     'store',
     'tags',
     'likes',
-    'store_custom',
     'rest_framework',
     'django_filters'
+    # 'core',
 ]
 
 MIDDLEWARE = [
