@@ -39,12 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'playground',
+    'rest_framework',
     'debug_toolbar',
+    'playground',
+    'django_filters',
+    'djoser',
     'store',
     'tags',
     'likes',
-    'store_custom',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -83,6 +86,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'storefront.wsgi.application'
+# Convert default string into deciamal price
+
+REST_FRAMEWORK = {
+    'COERCE_DECIMAL_TO_STRING': False,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    # 'PAGE_SIZE': 10
+}
 
 
 # Database
@@ -141,3 +153,19 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'core.User'
+
+DJOSER = {
+    'SERIALIZERS' : {
+        'user_create':'core.serializers.UserCreateSerializer',
+        'current_user':'core.serializers.UserSerializer',
+    }
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
+}
