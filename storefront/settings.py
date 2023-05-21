@@ -39,14 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'playground',
+    'rest_framework',
     'debug_toolbar',
+    'playground',
+    'django_filters',
+    'djoser',
     'store',
     'tags',
     'likes',
-    'rest_framework',
-    'django_filters'
-    # 'core',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -89,8 +90,12 @@ WSGI_APPLICATION = 'storefront.wsgi.application'
 
 REST_FRAMEWORK = {
     'COERCE_DECIMAL_TO_STRING': False,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
     # 'PAGE_SIZE': 10
 }
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -148,3 +153,19 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'core.User'
+
+DJOSER = {
+    'SERIALIZERS' : {
+        'user_create':'core.serializers.UserCreateSerializer',
+        'current_user':'core.serializers.UserSerializer',
+    }
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
+}
